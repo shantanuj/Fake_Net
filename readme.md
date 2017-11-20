@@ -1,7 +1,5 @@
 Our code is stored as ipython notebooks (.html, .ipynb) and .py files which can be viewed as html documents or run as jupyter notebooks. 
 
-Due to memory space limits, we have not attached the relevant datasets. Our code can be viewed with datasets at: https://github.com/shantanuj/Fake_Net 
-
 The directory is arranged as follows:
 
 1) Model 1: Predict fakeness by mining text features for a specific dataset
