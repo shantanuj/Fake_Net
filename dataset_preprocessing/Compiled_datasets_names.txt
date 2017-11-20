@@ -1,0 +1,13 @@
+We explored and have combined the following datasets (in addition to scraped articles):
+1) https://www.kaggle.com/mrisdal/fake-news
+2) https://github.com/genyunus/Detecting_Fake_News
+3) https://github.com/GeorgeMcIntire/fake_real_news_dataset
+4) https://arxiv.org/pdf/1705.00648.pdf
+5) https://github.com/clips/news-audit
+
+In interest of memory space, we have not attached the respective dataset files. 
+
+Additional resources:
+1) https://github.com/KaiDMML/FakeNewsNet  
+
+As shown in our jupyter notebook, we combined the datasets to attain fake and real categories. We also added more real articles by scraping articles from Bloomberg. 

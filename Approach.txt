@@ -1,0 +1,76 @@
+Our final plan to detect fake news:
+
+Example: 
+    For a given website:
+        Headline: Barack Obama planning to launch inquest into Trump's military spending
+        Body: Barack Obama ... bla bla bla
+
+Our first Kaggle and fake/not fake model just sees domain reputation and text features--> outputs some spam score
+This is a rudimentary dataset approach--> heaviest feature is domain reputation and tfidf word features. 
+Thus, a domain with low reputation could publish a true article, yet be marked with spam. (FALSE POSITIVES of spam)
+
+Example:
+    Barack Obama planning to launch inquest by domain: usapolitics (assume a biased url) could be classified as fake based on Kaggle dataset model.
+    
+A new global perspective to combine info from all related articles is needed. A popular research option is stance. 
+    
+How does this work?
+
+Example:
+    Take headline: Barack Obama planning to launch inquest by ... on usapolitics.com
+    Find all related headlines and articles related to this (we can also find all bodies-> more expensive)
+        How: 
+        1) Compare pairwise similarity of headlines--> take all that pass a threshold
+        1) ORiginal_HEADLINE:Barack Obama planning inquest (usapolitics) --> Barack Obama campaign against Trump(guardian); Barack Obama president(times); Barack Obama campaign for hunger(somewebsite); 
+        1) For all candidates--> get respective body and compute stance(ORIGINAL_HEADLINE; CANDIDATE_BODIES)
+        1) Stance-> if prob_discuss>unrelated then ->  if(prob_agree>disagree) = output_prob_agree else = -output_prob_disagree
+        1) Finally compute sum(stance*softmaxed(domain_reputation))   //Softmax is just relative distribution of each
+        1) If sum>threshold--> %(relative_sum/threshold) to be true else |%(relative_sum/threshold)| likely to be false
+        
+        
+        2) An alternative is func_related(headline, body)--> take all bodies and compute stance of ORIGINAL_HEADLINE with respect to them; meaning take Obama headline and run against all article bodies (even random hilary articles) then get related, unrelated etc (most will be unrelated)--> then 
+        This could be better if candidate function is not strong (meaning: TRUMP's campaign to be investigated by Obama's campaign does not match Obama to launch inquest into Trump presidency)
+        
+        
+        In summary, three functions:
+        1) (OPTIONAL) candidates(original_headline, corpus):
+            Given original_headline, find all candidate articles (through headline similarity) to limit search space.
+        
+        2) stance(headline, body) for all body in candidate bodies: 
+            Given (headline,candidate_bodies), compute stance for each --> agree, disagree probs (ignore all unrelated)
+            Outputs list of stance scores (-,0 or +) 
+            
+        3) fake_or_not(headline, stance, domains):
+            Weight candidate stances with relative weighted domain reputation; FOR THIS WE NEED a domain reputation score from function 4
+            Outputs final fake or not based on threshold
+            
+        4) domain_reputation_score(domain)
+            Given dataset, compute probability score for domain reputation (how many times is it assigned to be fake or not; if always fake -> then set to be negative; limit from -0.5 to +1
+
+
+SO, in essence, we did the following:
+1) Ran kaggle set with cross_val, mined stuff, found that locally this outputs spam based on word occurances (NOT ENOUGH);
+Interesting property in visualization-> stance
+2) For global perspective need stance: So made stance model and domain_reputation_model
+3) Combined all three models: Local_word_feature_based_kaggle+ fake_or_not
+    This means fake_or_not outputted a fake/real score; we combine this score with Kaggle local dataset score--> get spam score 
+
+
+
+
+
+
+
+TO DO:
+1) Combine datasets DONE
+1) Modularize stance_model (Basically callabale as stance(headline,body) gives prob distribution
+2) Make predictions processing script to get stance score as a list of candidate bodies
+3) Make domain_weighted function (for dataset)/json file
+4) fake_or_not function
+
+
+OLD:
+1) Make kaggle clusters; find a representative cluster  
+2) Make progress such as https://www.datacamp.com/community/tutorials/scikit-learn-fake-news
+3) Generalize the test_stances and train_stances
+
